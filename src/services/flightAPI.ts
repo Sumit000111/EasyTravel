@@ -102,29 +102,29 @@ export const fetchFlights = async (
  */
 const parseSerpApiResponse = (data: any, passengers: number): FlightData[] => {
   try {
-    const flights: FlightData[] = [];
+    const flightsList: FlightData[] = [];
 
     const processFlightItem = (flightItem: any, index: number) => {
-      const flightLegs = flightItem.flights || [];
-      const firstFlightLeg = flightLegs[0];
+      const legs = flightItem.flights || [];
+      const firstLeg = legs[0];
 
-      if (firstFlightLeg) {
-        const departureTime = firstFlightLeg.departure_time || '';
-        const arrivalTime = firstFlightLeg.arrival_time || '';
-        const flightDuration = firstFlightLeg.duration || 0;
+      if (firstLeg) {
+        const depTime = firstLeg.departure_time || '';
+        const arrTime = firstLeg.arrival_time || '';
+        const duration = firstLeg.duration || 0;
 
-        flights.push({
+        flightsList.push({
           id: `flight-${index}`,
-          airline: firstFlightLeg.airline || 'Airline',
-          departure: formatTime(departureTime),
-          arrival: formatTime(arrivalTime),
-          duration: formatDuration(flightDuration),
+          airline: firstLeg.airline || 'Airline',
+          departure: formatTime(depTime),
+          arrival: formatTime(arrTime),
+          duration: formatDuration(duration),
           price: Math.round((flightItem.price || 0) * passengers),
           stops: flightItem.stop_count || 0,
-          departureTime: formatTime(departureTime),
-          arrivalTime: formatTime(arrivalTime),
-          flightNumber: firstFlightLeg.flight_number || 'N/A',
-          aircraft: firstFlightLeg.aircraft || 'Aircraft',
+          departureTime: formatTime(depTime),
+          arrivalTime: formatTime(arrTime),
+          flightNumber: firstLeg.flight_number || 'N/A',
+          aircraft: firstLeg.aircraft || 'Aircraft',
         });
       }
     };
@@ -136,13 +136,13 @@ const parseSerpApiResponse = (data: any, passengers: number): FlightData[] => {
     }
 
     // Also check other_flights if best_flights is empty
-    if (flights.length === 0 && data.other_flights && Array.isArray(data.other_flights)) {
+    if (flightsList.length === 0 && data.other_flights && Array.isArray(data.other_flights)) {
       data.other_flights.slice(0, 6).forEach((flightItem: any, index: number) => {
         processFlightItem(flightItem, index);
       });
     }
 
-    return flights.sort((a, b) => a.price - b.price);
+    return flightsList.sort((a, b) => a.price - b.price);
   } catch (error) {
     console.error('Error parsing SerpApi response:', error);
     return [];
@@ -183,7 +183,7 @@ const generateMockFlights = (
   passengers: number
 ): FlightData[] => {
   const airlines = ['Air India', 'SpiceJet', 'IndiGo', 'Vistara', 'GoAir', 'AirAsia'];
-  const flights: FlightData[] = [];
+  const mockFlightsList: FlightData[] = [];
 
   for (let i = 0; i < 6; i++) {
     const hour = Math.floor(Math.random() * 20) + 4;
@@ -197,7 +197,7 @@ const generateMockFlights = (
     const price = Math.floor(Math.random() * 5000) + 3000;
     const stops = Math.floor(Math.random() * 3);
 
-    flights.push({
+    mockFlightsList.push({
       id: `flight-${i}`,
       airline: airlines[Math.floor(Math.random() * airlines.length)],
       departure: `${departureHour}:${departureMin}`,
@@ -212,7 +212,7 @@ const generateMockFlights = (
     });
   }
 
-  return flights.sort((a, b) => a.price - b.price);
+  return mockFlightsList.sort((a, b) => a.price - b.price);
 };
 
 /**

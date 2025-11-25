@@ -71,30 +71,30 @@ export const fetchHotels = async (
  */
 const parseSerpApiHotelResponse = (data: any): HotelData[] => {
   try {
-    const hotels: HotelData[] = [];
+    const hotelsList: HotelData[] = [];
 
     if (data.properties && Array.isArray(data.properties)) {
-      data.properties.slice(0, 8).forEach((hotel: any, index: number) => {
-        if (hotel.title && hotel.price) {
-          const priceText = hotel.price || '₹0';
+      data.properties.slice(0, 8).forEach((hotelItem: any, index: number) => {
+        if (hotelItem.title && hotelItem.price) {
+          const priceText = hotelItem.price || '₹0';
           const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
 
-          hotels.push({
+          hotelsList.push({
             id: `hotel-${index}`,
-            name: hotel.title || 'Hotel',
-            rating: parseFloat(hotel.rating) || 4.0,
-            reviews: parseInt(hotel.review_count) || 0,
-            location: hotel.location || 'India',
+            name: hotelItem.title || 'Hotel',
+            rating: parseFloat(hotelItem.rating) || 4.0,
+            reviews: parseInt(hotelItem.review_count) || 0,
+            location: hotelItem.location || 'India',
             price: price || 0,
-            originalPrice: hotel.serpapi_pagination?.original_price ? parseFloat(hotel.serpapi_pagination.original_price) : undefined,
-            image: hotel.image || '',
-            amenities: hotel.amenities || [],
+            originalPrice: hotelItem.serpapi_pagination?.original_price ? parseFloat(hotelItem.serpapi_pagination.original_price) : undefined,
+            image: hotelItem.image || '',
+            amenities: hotelItem.amenities || [],
           });
         }
       });
     }
 
-    return hotels.sort((a, b) => a.price - b.price);
+    return hotelsList.sort((a, b) => a.price - b.price);
   } catch (error) {
     console.error('Error parsing SerpApi hotel response:', error);
     return [];
@@ -105,7 +105,7 @@ const parseSerpApiHotelResponse = (data: any): HotelData[] => {
  * Generates mock hotel data for fallback
  */
 const generateMockHotels = (destination: string, guests: number): HotelData[] => {
-  const hotels: HotelData[] = [
+  const mockHotelsList: HotelData[] = [
     {
       id: 'hotel-1',
       name: 'The Grand Palace',
@@ -192,7 +192,7 @@ const generateMockHotels = (destination: string, guests: number): HotelData[] =>
     },
   ];
 
-  return hotels.sort((a, b) => a.price - b.price);
+  return mockHotelsList.sort((a, b) => a.price - b.price);
 };
 
 /**

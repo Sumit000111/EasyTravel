@@ -6,6 +6,38 @@ import { generateKayakFlightUrl, generateKayakHotelUrl, openKayakSearch } from "
 import { fetchFlights, FlightData } from "@/services/flightAPI";
 import { fetchHotels, HotelData } from "@/services/hotelAPI";
 
+// Fixed duplicate handleHotelSearch - v2
+// Helper function to get city code from city name
+const getCityCode = (city: string): string => {
+  const cityMap: Record<string, string> = {
+    'delhi': 'DEL',
+    'mumbai': 'BOM',
+    'bangalore': 'BLR',
+    'kolkata': 'CCU',
+    'chennai': 'MAA',
+    'hyderabad': 'HYD',
+    'pune': 'PNQ',
+    'goa': 'GOI',
+    'jaipur': 'JAI',
+    'kerala': 'COK',
+    'manali': 'KUU',
+    'rishikesh': 'DED',
+    'shimla': 'SLV',
+    'udaipur': 'UDR',
+  };
+  const normalizedCity = city.toLowerCase().trim();
+  return cityMap[normalizedCity] || city.toUpperCase().substring(0, 3);
+};
+
+// Helper function to format date for KAYAK URL
+const formatDateForURL = (date: string): string => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 /**
  * KAYAK Search Component
  * 
@@ -70,35 +102,6 @@ const KayakSearch = ({
 
   const handleBookNow = (flight: FlightData) => {
     // Redirect to KAYAK for flight booking
-    const getCityCode = (city: string): string => {
-      const cityMap: Record<string, string> = {
-        'delhi': 'DEL',
-        'mumbai': 'BOM',
-        'bangalore': 'BLR',
-        'kolkata': 'CCU',
-        'chennai': 'MAA',
-        'hyderabad': 'HYD',
-        'pune': 'PNQ',
-        'goa': 'GOI',
-        'jaipur': 'JAI',
-        'kerala': 'COK',
-        'manali': 'KUU',
-        'rishikesh': 'DED',
-        'shimla': 'SLV',
-        'udaipur': 'UDR',
-      };
-      const normalizedCity = city.toLowerCase().trim();
-      return cityMap[normalizedCity] || city.toUpperCase().substring(0, 3);
-    };
-
-    const formatDateForURL = (date: string): string => {
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
     const originCode = getCityCode(origin);
     const destCode = getCityCode(destination);
     const depDate = formatDateForURL(startDate);
@@ -108,25 +111,6 @@ const KayakSearch = ({
     const kayakUrl = `https://www.kayak.com/flights/${originCode}-${destCode}/${depDate}/${retDate}?passengers=${passengers}`;
     
     window.open(kayakUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleHotelSearch = async () => {
-    setShowFlights(true);
-    setActiveTab('hotels');
-    setLoading(true);
-    try {
-      const hotelData = await fetchHotels(
-        destination,
-        startDate,
-        endDate,
-        passengers
-      );
-      setHotels(hotelData);
-    } catch (error) {
-      console.error('Error fetching hotels:', error);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleHotelBooking = (hotel: HotelData) => {
