@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import { Calendar, DollarSign, MapPin, Trash2, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import KayakSearch from "@/components/KayakSearch";
 import {
   Dialog,
   DialogContent,
@@ -192,7 +193,16 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-2">
+                    <KayakSearch
+                      origin={trip.origin}
+                      destination={trip.destination}
+                      startDate={trip.start_date}
+                      endDate={trip.end_date}
+                      passengers={1}
+                      className="mt-2"
+                    />
+
+                    <div className="flex gap-2 pt-2">
                     <Button
                       onClick={() => setSelectedTrip(trip)}
                       variant="outline"
@@ -227,6 +237,18 @@ const Dashboard = () => {
               {selectedTrip && `${formatDate(selectedTrip.start_date)} - ${formatDate(selectedTrip.end_date)}`}
             </DialogDescription>
           </DialogHeader>
+
+          {selectedTrip && (
+            <div className="mb-4">
+              <KayakSearch
+                origin={selectedTrip.origin}
+                destination={selectedTrip.destination}
+                startDate={selectedTrip.start_date}
+                endDate={selectedTrip.end_date}
+                passengers={1}
+              />
+            </div>
+          )}
 
           {selectedTrip?.itinerary && (
             <div className="space-y-6">

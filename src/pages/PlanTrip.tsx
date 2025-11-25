@@ -9,6 +9,7 @@ import { Calendar, DollarSign, MapPin, Plane, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import KayakSearch from "@/components/KayakSearch";
 
 const destinations = [
   "Delhi", "Jaipur", "Goa", "Kerala", "Manali", "Rishikesh", 
@@ -252,6 +253,16 @@ const PlanTrip = () => {
                     Trip Duration: <span className="text-accent">{calculateDays()} days</span>
                   </p>
                 </div>
+              )}
+
+              {origin && destination && startDate && endDate && (
+                <KayakSearch
+                  origin={origin}
+                  destination={destination}
+                  startDate={startDate}
+                  endDate={endDate}
+                  passengers={1}
+                />
               )}
 
               <Button
